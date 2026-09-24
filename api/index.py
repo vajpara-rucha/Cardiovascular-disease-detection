@@ -53,7 +53,7 @@ try:
         expected_features = bundle.get('features', FALLBACK_FEATURES)
         scaler = bundle.get('scaler')
         models = bundle.get('models', {})
-        default_model_key = 'logistic_regression' if 'logistic_regression' in models else bundle.get('default_model', 'decision_tree')
+        default_model_key = bundle.get('default_model', 'random_forest' if 'random_forest' in models else 'decision_tree')
     else:
         model_data = joblib.load(LEGACY_PATH)
         _register_legacy_model(model_data)

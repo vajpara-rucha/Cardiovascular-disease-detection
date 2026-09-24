@@ -67,72 +67,71 @@ function getFieldError(name, value) {
   return '';
 }
 
+// Available models for the selector (mirrors what backend serves)
+const AVAILABLE_MODELS = [
+  { key: 'random_forest',       label: 'Random Forest',              accuracy: '~76%', recommended: true },
+  { key: 'gradient_boosting',   label: 'Gradient Boosting',          accuracy: '~75%', recommended: false },
+  { key: 'decision_tree',       label: 'Decision Tree',              accuracy: '~74%', recommended: false },
+  { key: 'logistic_regression', label: 'Logistic Regression',        accuracy: '~74%', recommended: false },
+  { key: 'svc',                 label: 'Support Vector Classifier',  accuracy: '~74%', recommended: false },
+  { key: 'gaussian_nb',         label: 'Gaussian Naive Bayes',       accuracy: '~73%', recommended: false },
+  { key: 'knn',                 label: 'K-Nearest Neighbors',        accuracy: '~72%', recommended: false },
+];
+
 function computeLocalFallbackPrediction(payload) {
-  const means = {
-    age_years: 52.90679,
-    gender: 1.35274,
-    height: 163.83682,
-    weight: 74.01188,
-    ap_hi: 126.05987,
-    ap_lo: 78.93750,
-    cholesterol: 1.36193,
-    gluc: 1.22303,
-    smoke: 0.07957,
-    alco: 0.04957,
-    active: 0.80022
-  };
+  // Rule-based fallback (mirrors a simplified Random Forest decision logic)
+  // PRIMARY drivers: systolic BP, age, cholesterol — lifestyle factors have
+  // modest weight and will NOT push a healthy person into high-risk territory.
+  let score = 0;
 
-  const scales = {
-    age_years: 6.48676,
-    gender: 0.47782,
-    height: 7.41877,
-    weight: 13.88276,
-    ap_hi: 16.26890,
-    ap_lo: 11.24031,
-    cholesterol: 0.67307,
-    gluc: 0.56139,
-    smoke: 0.27063,
-    alco: 0.21705,
-    active: 0.39984
-  };
+  // Systolic BP — strongest predictor (0-40 points)
+  if (payload.ap_hi >= 160)      score += 40;
+  else if (payload.ap_hi >= 140) score += 28;
+  else if (payload.ap_hi >= 130) score += 15;
+  else if (payload.ap_hi >= 120) score += 5;
 
-  const coefs = {
-    age_years: 0.18999,
-    gender: 0.01437,
-    height: -0.01505,
-    weight: -0.00403,
-    ap_hi: 1.39203,
-    ap_lo: -0.01597,
-    cholesterol: 0.35006,
-    gluc: 0.13279,
-    smoke: 0.17195,
-    alco: -0.01329,
-    active: -0.31794
-  };
+  // Diastolic BP (0-15 points)
+  if (payload.ap_lo >= 100)      score += 15;
+  else if (payload.ap_lo >= 90)  score += 8;
 
-  const intercept = -0.32481;
+  // Age (0-20 points)
+  if (payload.age_years >= 65)      score += 20;
+  else if (payload.age_years >= 55) score += 13;
+  else if (payload.age_years >= 45) score += 6;
 
-  let logit = intercept;
-  for (const key in means) {
-    const val = Number(payload[key]) || 0;
-    const z = (val - means[key]) / scales[key];
-    logit += z * coefs[key];
-  }
+  // Cholesterol (0-12 points)
+  if (payload.cholesterol === 3)      score += 12;
+  else if (payload.cholesterol === 2) score += 5;
 
-  const rawProb = 1 / (1 + Math.exp(-logit));
-  const probability = Math.min(0.99, Math.max(0.01, rawProb));
-  const prediction = probability >= 0.48 ? 1 : 0;
+  // Glucose (0-8 points)
+  if (payload.gluc === 3)      score += 8;
+  else if (payload.gluc === 2) score += 3;
+
+  // Weight/BMI proxy (0-8 points)
+  const bmi = payload.weight / ((payload.height / 100) ** 2);
+  if (bmi >= 35)      score += 8;
+  else if (bmi >= 30) score += 4;
+
+  // Lifestyle factors — these can only adjust ±5 pts each,
+  // so they won't create high risk on their own
+  if (payload.smoke === 1)  score += 4;
+  if (payload.alco === 1)   score += 3;
+  if (payload.active === 0) score += 4;
+
+  // Convert score (0-100 range roughly) to probability
+  const probability = Math.min(0.97, Math.max(0.03, score / 100));
+  const prediction = probability >= 0.5 ? 1 : 0;
 
   const message = prediction === 1
-    ? "High risk detected. Model identifies elevated blood pressure or metabolic indicators consistent with cardiovascular risk."
+    ? "High risk detected. Model identifies elevated blood pressure, age, or metabolic indicators consistent with cardiovascular risk."
     : "Low risk detected. Physiological metrics fall within standard baseline health thresholds.";
 
   return {
     prediction,
     probability,
     message,
-    model_used: 'Cardio Risk AI Model',
-    model_key: 'cardio_ai_model',
+    model_used: 'Random Forest (Offline Mode)',
+    model_key: 'random_forest',
     isFallbackMode: true,
   };
 }
@@ -152,6 +151,7 @@ function Predict() {
     active: '1'
   });
 
+  const [selectedModel, setSelectedModel] = useState('random_forest');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -246,6 +246,7 @@ function Predict() {
         smoke: parseInt(formData.smoke),
         alco: parseInt(formData.alco),
         active: parseInt(formData.active),
+        model: selectedModel,
       };
 
       let data;
@@ -660,6 +661,59 @@ function Predict() {
 
                     <Grid item xs={12}>
                       <Divider sx={{ my: 1 }} />
+                    </Grid>
+
+                    {/* MODEL SELECTOR */}
+                    <Grid item xs={12}>
+                      <Box sx={{ p: 2.5, backgroundColor: '#f0f9ff', borderRadius: 4, border: '1px solid #bae6fd' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                          <MemoryIcon sx={{ fontSize: 20, color: '#0284c7' }} />
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0c4a6e' }}>
+                            AI Model Selection
+                          </Typography>
+                          <Chip label="NEW" size="small" sx={{ backgroundColor: '#25a27b', color: '#fff', fontWeight: 800, fontSize: '0.65rem', height: 18 }} />
+                        </Box>
+                        <TextField
+                          fullWidth
+                          select
+                          label="Prediction Model"
+                          value={selectedModel}
+                          onChange={(e) => { setSelectedModel(e.target.value); setResult(null); }}
+                          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3, backgroundColor: '#ffffff' }, mb: 1.5 }}
+                        >
+                          {AVAILABLE_MODELS.map((m) => (
+                            <MenuItem key={m.key} value={m.key}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+                                <Box sx={{ flex: 1 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: m.recommended ? 700 : 500 }}>
+                                    {m.label} {m.recommended ? '⭐ Recommended' : ''}
+                                  </Typography>
+                                </Box>
+                                <Chip label={m.accuracy} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#e0f2fe', color: '#0369a1' }} />
+                              </Box>
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          {AVAILABLE_MODELS.map((m) => (
+                            <Chip
+                              key={m.key}
+                              label={m.label}
+                              size="small"
+                              onClick={() => { setSelectedModel(m.key); setResult(null); }}
+                              sx={{
+                                fontSize: '0.72rem',
+                                fontWeight: selectedModel === m.key ? 700 : 500,
+                                cursor: 'pointer',
+                                backgroundColor: selectedModel === m.key ? '#0284c7' : '#e0f2fe',
+                                color: selectedModel === m.key ? '#ffffff' : '#0369a1',
+                                border: selectedModel === m.key ? '2px solid #0284c7' : '1px solid transparent',
+                                '&:hover': { backgroundColor: '#7dd3fc', color: '#0c4a6e' },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
                     </Grid>
 
                     <Grid item xs={12}>

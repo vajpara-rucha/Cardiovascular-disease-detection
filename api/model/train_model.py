@@ -1,20 +1,23 @@
 """
 train_model.py
 ---------------
-Week 6-7 deliverable: trains CVD risk models and saves them as .pkl files,
-plus writes model_metrics.json (used by the Streamlit "Model Info" page)
-and feature importance data (used by "Data Insights").
+Trains CVD risk models and saves them as .pkl files,
+plus writes model_metrics.json (used by the app Model Info page).
 
 Run from the project root:
-    python model/train_model.py
+    python api/model/train_model.py
+  OR from api/model/ directory:
+    python train_model.py
 """
 
 import json
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
@@ -23,13 +26,25 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 import joblib
 
 # ---------------------------------------------------------------
-# 1. Load data
+# 0. Resolve paths robustly (works when run from any directory)
 # ---------------------------------------------------------------
-df = pd.read_csv('data/cardio_train.csv', sep=';')
-raw_records = len(df)
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.abspath(os.path.join(_HERE, '..', '..'))
+
+DATA_PATH = os.path.join(_ROOT, 'data', 'cardio_train.csv')
+BUNDLE_OUT = os.path.join(_HERE, 'cardio_models.pkl')
+LEGACY_OUT = os.path.join(_HERE, 'cardio_model.pkl')
+METRICS_OUT = os.path.join(_HERE, 'model_metrics.json')
 
 # ---------------------------------------------------------------
-# 2. Data cleaning (Week 2 task, re-verified here)
+# 1. Load data
+# ---------------------------------------------------------------
+df = pd.read_csv(DATA_PATH, sep=';')
+raw_records = len(df)
+print(f"Loaded {raw_records} records.")
+
+# ---------------------------------------------------------------
+# 2. Data cleaning
 # ---------------------------------------------------------------
 df = df.drop(columns=['id'])
 df = df[
@@ -42,8 +57,9 @@ df = df[
 
 final_records = len(df)
 rows_removed = raw_records - final_records
+print(f"After cleaning: {final_records} records ({rows_removed} removed).")
 
-# convert age to years for a friendlier feature
+# Convert age to years for a friendlier feature
 df['age_years'] = (df['age'] / 365.25).round(1)
 
 # ---------------------------------------------------------------
@@ -62,10 +78,38 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# Tree/ensemble models stay on the original (unscaled) feature space so the
-# existing Gradient Boosting pipeline is unchanged. Distance/linear models
-# use the scaler fitted on the same training split.
+# ---------------------------------------------------------------
+# 4. Model specs
+#    Random Forest is the DEFAULT: highest accuracy and handles
+#    non-linear feature interactions properly — smoke/alco/active
+#    won't falsely inflate risk scores when clinical indicators are normal.
+#    Gradient Boosting added as a second high-accuracy ensemble option.
+# ---------------------------------------------------------------
 MODEL_SPECS = [
+    {
+        'key': 'random_forest',
+        'label': 'Random Forest',
+        'use_scaler': False,
+        'estimator': RandomForestClassifier(
+            n_estimators=200,
+            max_depth=12,
+            min_samples_leaf=10,
+            n_jobs=-1,
+            random_state=42,
+        ),
+    },
+    {
+        'key': 'gradient_boosting',
+        'label': 'Gradient Boosting',
+        'use_scaler': False,
+        'estimator': GradientBoostingClassifier(
+            n_estimators=150,
+            max_depth=5,
+            learning_rate=0.1,
+            subsample=0.8,
+            random_state=42,
+        ),
+    },
     {
         'key': 'logistic_regression',
         'label': 'Logistic Regression',
@@ -103,10 +147,10 @@ MODEL_SPECS = [
     },
 ]
 
-DEFAULT_MODEL = 'decision_tree'
+DEFAULT_MODEL = 'random_forest'
 
 # ---------------------------------------------------------------
-# 4. Train models
+# 5. Train models
 # ---------------------------------------------------------------
 trained = {}
 per_model_metrics = {}
@@ -143,13 +187,12 @@ for spec in MODEL_SPECS:
         'roc_auc': round(roc_auc * 100, 1),
     }
 
-dt_model = trained[DEFAULT_MODEL]['estimator']
-dt_metrics = per_model_metrics[DEFAULT_MODEL]
+rf_model = trained[DEFAULT_MODEL]['estimator']
+rf_metrics = per_model_metrics[DEFAULT_MODEL]
 
 # ---------------------------------------------------------------
-# 5. Save models
+# 6. Save models
 # ---------------------------------------------------------------
-bundle_filename = 'model/cardio_models.pkl'
 joblib.dump(
     {
         'features': FEATURES,
@@ -157,34 +200,34 @@ joblib.dump(
         'default_model': DEFAULT_MODEL,
         'models': trained,
     },
-    bundle_filename,
+    BUNDLE_OUT,
 )
-print(f"Saved model bundle as '{bundle_filename}'")
+print(f"Saved model bundle as '{BUNDLE_OUT}'")
 
-# Keep the original single-model pickle for backward compatibility
-model_filename = 'model/cardio_model.pkl'
-joblib.dump({'model': dt_model, 'features': FEATURES}, model_filename)
-print(f"Default Decision Tree model saved as '{model_filename}'")
+# Keep the original single-model pickle for backward compatibility (now RF)
+joblib.dump({'model': rf_model, 'features': FEATURES}, LEGACY_OUT)
+print(f"Default Random Forest model saved as '{LEGACY_OUT}'")
 
 # ---------------------------------------------------------------
-# 6. Save metrics + feature importance + EDA numbers for the app
+# 7. Save metrics + feature importance + EDA numbers for the app
 # ---------------------------------------------------------------
-importances = pd.Series(dt_model.feature_importances_, index=FEATURES)
+importances = pd.Series(rf_model.feature_importances_, index=FEATURES)
 importances = (importances / importances.sum() * 100).sort_values(ascending=False)
 
 metrics = {
-    "algorithm": "DecisionTreeClassifier",
+    "algorithm": "RandomForestClassifier",
     "library": "scikit-learn",
     "feature_count": len(FEATURES),
     "default_model": DEFAULT_MODEL,
     "hyperparameters": {
-        "max_depth": 8,
-        "min_samples_leaf": 20,
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_leaf": 10,
     },
     "performance": {
-        "accuracy": dt_metrics['accuracy'],
-        "f1_score": dt_metrics['f1_score'],
-        "roc_auc": dt_metrics['roc_auc'],
+        "accuracy": rf_metrics['accuracy'],
+        "f1_score": rf_metrics['f1_score'],
+        "roc_auc": rf_metrics['roc_auc'],
     },
     "models": per_model_metrics,
     "feature_importance": importances.round(1).to_dict(),
@@ -196,7 +239,9 @@ metrics = {
     },
 }
 
-with open('model/model_metrics.json', 'w') as f:
+with open(METRICS_OUT, 'w') as f:
     json.dump(metrics, f, indent=2)
 
-print("Saved model/model_metrics.json")
+print(f"Saved {METRICS_OUT}")
+print(f"\nDone! Default model: {DEFAULT_MODEL}")
+print("All models available:", list(trained.keys()))
