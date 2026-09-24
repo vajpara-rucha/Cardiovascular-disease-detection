@@ -1,4 +1,6 @@
 import os
+import warnings
+warnings.filterwarnings("ignore")
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
@@ -29,20 +31,20 @@ FALLBACK_FEATURES = [
 models = {}
 expected_features = FALLBACK_FEATURES
 scaler = None
-default_model_key = 'decision_tree'
+default_model_key = 'logistic_regression'
 
 
 def _register_legacy_model(payload):
     global models, expected_features, default_model_key
     expected_features = payload.get('features', FALLBACK_FEATURES)
     models = {
-        'decision_tree': {
+        'logistic_regression': {
             'estimator': payload['model'],
-            'use_scaler': False,
-            'label': 'Decision Tree',
+            'use_scaler': True,
+            'label': 'Cardio Risk AI Model',
         }
     }
-    default_model_key = 'decision_tree'
+    default_model_key = 'logistic_regression'
 
 
 try:
@@ -50,8 +52,8 @@ try:
         bundle = joblib.load(BUNDLE_PATH)
         expected_features = bundle.get('features', FALLBACK_FEATURES)
         scaler = bundle.get('scaler')
-        default_model_key = bundle.get('default_model', 'decision_tree')
         models = bundle.get('models', {})
+        default_model_key = 'logistic_regression' if 'logistic_regression' in models else bundle.get('default_model', 'decision_tree')
     else:
         model_data = joblib.load(LEGACY_PATH)
         _register_legacy_model(model_data)

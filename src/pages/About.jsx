@@ -59,14 +59,7 @@ function About() {
                 Data Source
               </Typography>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                Cardiovascular Disease Dataset (Kaggle) —{' '}
-                <MuiLink
-                  href="https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View Dataset
-                </MuiLink>
+                Cardiovascular Disease Clinical Dataset
               </Typography>
             </Box>
             

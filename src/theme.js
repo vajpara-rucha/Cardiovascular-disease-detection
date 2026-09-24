@@ -1,150 +1,157 @@
 import { createTheme } from '@mui/material/styles';
 
-const INDIGO = {
-  main: '#6366f1',
-  dark: '#4f46e5',
-  light: '#818cf8',
-  violet: '#8b5cf6',
+const CARDIO_GREEN = {
+  main: '#25a27b',
+  dark: '#1b7d5e',
+  light: '#3fc397',
+  softBg: '#e6f7f0',
 };
 
-const TEAL = {
-  main: '#14b8a6',
-  light: '#2dd4bf',
-};
-
-const GRAY = {
-  50: '#f9fafb',
-  100: '#f3f4f6',
-  800: '#1f2937',
-  900: '#111827',
-  950: '#030712',
+const CARDIO_DARK = {
+  bg: '#0a1118',
+  paper: '#121d27',
+  card: '#162432',
 };
 
 const theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: INDIGO.main,
-      dark: INDIGO.dark,
-      light: INDIGO.light,
+      main: CARDIO_GREEN.main,
+      dark: CARDIO_GREEN.dark,
+      light: CARDIO_GREEN.light,
       contrastText: '#ffffff',
     },
     secondary: {
-      main: TEAL.main,
-      light: TEAL.light,
+      main: '#14b8a6',
+      light: '#2dd4bf',
       contrastText: '#ffffff',
     },
     background: {
-      default: GRAY[950],
-      paper: 'rgba(17, 24, 39, 0.7)',
+      default: '#f8fafc',
+      paper: '#ffffff',
     },
     text: {
-      primary: '#f9fafb',
-      secondary: '#9ca3af',
+      primary: '#0f172a',
+      secondary: '#475569',
     },
-    divider: 'rgba(255, 255, 255, 0.1)',
+    divider: 'rgba(15, 23, 42, 0.08)',
   },
   typography: {
-    fontFamily: '"Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontFamily: '"Plus Jakarta Sans", "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     fontWeightLight: 300,
     fontWeightRegular: 400,
     fontWeightMedium: 500,
     fontWeightBold: 700,
     h1: {
+      fontFamily: '"Outfit", "Sora", "Plus Jakarta Sans", sans-serif',
       fontWeight: 800,
-      letterSpacing: '-0.04em',
-      lineHeight: 1.1,
+      letterSpacing: '-0.03em',
+      lineHeight: 1.15,
       fontSize: '2.5rem',
       '@media (min-width:600px)': { fontSize: '3.5rem' },
     },
     h2: {
+      fontFamily: '"Outfit", "Sora", "Plus Jakarta Sans", sans-serif',
       fontWeight: 800,
-      letterSpacing: '-0.03em',
+      letterSpacing: '-0.025em',
       lineHeight: 1.2,
       fontSize: '2rem',
+      '@media (min-width:600px)': { fontSize: '2.75rem' },
+    },
+    h3: {
+      fontFamily: '"Outfit", "Plus Jakarta Sans", sans-serif',
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
+      fontSize: '1.5rem',
+      '@media (min-width:600px)': { fontSize: '2rem' },
+    },
+    h4: {
+      fontFamily: '"Outfit", "Plus Jakarta Sans", sans-serif',
+      fontWeight: 700,
+      letterSpacing: '-0.015em',
+    },
+    h5: {
+      fontFamily: '"Outfit", "Plus Jakarta Sans", sans-serif',
+      fontWeight: 700,
+    },
+    h6: {
+      fontFamily: '"Outfit", "Plus Jakarta Sans", sans-serif',
+      fontWeight: 600,
     },
     button: {
+      fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif',
       textTransform: 'none',
       fontWeight: 600,
-      letterSpacing: '0.02em',
+      letterSpacing: '0.01em',
     },
   },
   shape: {
-    borderRadius: 16,
+    borderRadius: 20,
   },
   custom: {
-    gradients: {
-      page: `linear-gradient(135deg, ${GRAY[950]} 0%, ${GRAY[900]} 100%)`,
-      primary: `linear-gradient(135deg, ${INDIGO.main} 0%, ${INDIGO.violet} 100%)`,
-      brand: `linear-gradient(135deg, ${INDIGO.main} 0%, ${TEAL.light} 100%)`,
+    colors: {
+      green: CARDIO_GREEN,
+      darkBg: CARDIO_DARK,
+      mintBg: '#e6f7f0',
+      creamBg: '#fdfbf7',
     },
-    surfaces: {
-      glass: 'rgba(31, 41, 55, 0.4)',
-      glassBorder: 'rgba(255, 255, 255, 0.1)',
-      nav: 'rgba(3, 7, 18, 0.8)',
+    gradients: {
+      page: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
+      heroDark: 'linear-gradient(135deg, #0b1520 0%, #112233 100%)',
+      cardGreen: 'linear-gradient(135deg, #e6f7f0 0%, #d1f2e4 100%)',
+      cardCream: 'linear-gradient(135deg, #fdfbf7 0%, #f7f2e8 100%)',
+      riskHigh: 'linear-gradient(135deg, #fef2f2 0%, #ffe4e6 100%)',
+      riskLow: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+    },
+    shadows: {
+      card: '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+      cardHover: '0 20px 40px -10px rgba(37, 162, 123, 0.15)',
+      glow: '0 0 25px rgba(37, 162, 123, 0.4)',
     },
     radii: {
       card: 24,
       pill: 9999,
     },
-    shadows: {
-      card: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-      glow: '0 0 20px rgba(99, 102, 241, 0.5)',
-    },
-    transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
   },
   components: {
     MuiCssBaseline: {
-      styleOverrides: (themeArg) => ({
+      styleOverrides: {
         body: {
-          background: themeArg.custom.gradients.page,
-          minHeight: '100vh',
-          color: themeArg.palette.text.primary,
+          backgroundColor: '#f8fafc',
+          color: '#0f172a',
+          fontFamily: '"Outfit", "Inter", sans-serif',
         },
-        '::selection': {
-          background: themeArg.palette.primary.main,
-          color: '#fff',
-        }
-      }),
+      },
     },
     MuiButton: {
       styleOverrides: {
-        root: ({ theme: t }) => ({
-          borderRadius: t.custom.radii.pill,
-          transition: t.custom.transition,
-        }),
-        contained: ({ theme: t }) => ({
-          backgroundImage: t.custom.gradients.primary,
-          boxShadow: t.custom.shadows.glow,
+        root: {
+          borderRadius: 9999,
+          padding: '10px 24px',
+          boxShadow: 'none',
           '&:hover': {
-            transform: 'translateY(-2px) scale(1.02)',
-            boxShadow: '0 0 30px rgba(99, 102, 241, 0.8)',
+            boxShadow: '0 6px 20px rgba(37, 162, 123, 0.25)',
           },
-        }),
+        },
+        containedPrimary: {
+          backgroundColor: CARDIO_GREEN.main,
+          '&:hover': {
+            backgroundColor: CARDIO_GREEN.dark,
+          },
+        },
       },
     },
     MuiCard: {
       styleOverrides: {
-        root: ({ theme: t }) => ({
-          background: t.custom.surfaces.glass,
-          backdropFilter: 'blur(20px)',
-          border: `1px solid ${t.custom.surfaces.glassBorder}`,
-          borderRadius: t.custom.radii.card,
-          boxShadow: t.custom.shadows.card,
-        }),
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: ({ theme: t }) => ({
-          background: t.custom.surfaces.nav,
-          backdropFilter: 'blur(20px)',
-          borderBottom: `1px solid ${t.custom.surfaces.glassBorder}`,
-        }),
+        root: {
+          borderRadius: 24,
+          boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+          border: '1px solid rgba(0, 0, 0, 0.06)',
+        },
       },
     },
   },
 });
 
 export default theme;
-

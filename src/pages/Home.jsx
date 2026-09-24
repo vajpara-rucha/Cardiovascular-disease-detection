@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Box from '@mui/material/Box';
@@ -7,216 +7,540 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
 
-// Material Icons
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import SecurityIcon from '@mui/icons-material/Security';
-import SpeedIcon from '@mui/icons-material/Speed';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import DatasetIcon from '@mui/icons-material/Dataset';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-const HERO = {
-  eyebrow: 'AI-Powered Health Intelligence',
-  headline: ['Next-Generation', 'Cardiovascular', 'Risk Assessment'],
-  body: 'A focused, dark-themed workspace for evaluating cardiovascular disease risk using a transparent machine-learning model and actionable metrics.',
-  primaryCta: 'Start Evaluation',
-  primaryTo: '/predict',
-  secondaryCta: 'Explore Methodology',
-  secondaryTo: '/about',
-};
-
-const STATS = [
-  { value: '99.9%', label: 'Uptime' },
-  { value: '70K+', label: 'Training Data Records' },
-  { value: '< 200ms', label: 'Inference Speed' },
-];
-
-const FEATURES = [
-  {
-    title: 'Advanced Analytics',
-    body: 'Deep neural evaluation of demographic, vital-sign, and lifestyle data.',
-    icon: <AutoGraphIcon fontSize="large" color="primary" />,
-  },
-  {
-    title: 'Real-time Signal',
-    body: 'Lightning-fast form inputs yield real-time model predictions and probabilities.',
-    icon: <SpeedIcon fontSize="large" color="secondary" />,
-  },
-  {
-    title: 'Secure & Transparent',
-    body: 'Every risk calculation is fully auditable, offering clear insights.',
-    icon: <SecurityIcon fontSize="large" sx={{ color: '#818cf8' }} />,
-  },
-];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1, 
-    transition: { 
-      duration: 0.8, 
-      staggerChildren: 0.2,
-      ease: "easeOut"
-    } 
-  }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
-};
+import ContactSection from '../components/ContactSection';
+import Footer from '../components/Footer';
 
 export default function Home() {
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  const clinicBenefits = [
+    'ECG biosensors as consumables – no prepayment required',
+    'Extended ECG analysis for 3-5-7 days',
+    'Medical report ready for review in 24 working hours (at maximum)',
+    'Reduces patient and staff time',
+    'Eliminates the need for maintenance and repair',
+    '24/7 access to ECG records/patient reports',
+    'Remote monitoring capability',
+    'Technical support and access to educational materials (video instructions and documentation)',
+  ];
+
   return (
-    <Box sx={{ minHeight: '100vh', overflow: 'hidden', position: 'relative', pt: { xs: 8, md: 12 }, pb: { xs: 8, md: 12 }, px: { xs: 2, md: 6 } }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: '#ffffff', overflow: 'hidden' }}>
       
-      {/* Background Decorative Elements */}
-      <Box sx={{
-        position: 'absolute', top: '-10%', left: '-10%', width: '50vw', height: '50vw',
-        background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(0,0,0,0) 70%)',
-        zIndex: 0, filter: 'blur(60px)', borderRadius: '50%'
-      }} />
-      <Box sx={{
-        position: 'absolute', bottom: '-20%', right: '-10%', width: '60vw', height: '60vw',
-        background: 'radial-gradient(circle, rgba(20,184,166,0.1) 0%, rgba(0,0,0,0) 70%)',
-        zIndex: 0, filter: 'blur(80px)', borderRadius: '50%'
-      }} />
-
-      <Box sx={{ maxWidth: 1200, mx: 'auto', position: 'relative', zIndex: 1 }}>
-        <motion.div variants={containerVariants} initial="hidden" animate="visible">
-          
-          <Grid container spacing={6} alignItems="center" justifyContent="space-between">
-            {/* Left Content */}
+      {/* SECTION 1: HERO SECTION (From Screenshot 1) */}
+      <Box sx={{ pt: { xs: 4, md: 8 }, pb: { xs: 8, md: 12 }, px: { xs: 2, md: 6 }, background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)' }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            
+            {/* Hero Left Text */}
             <Grid item xs={12} md={6}>
-              <motion.div variants={itemVariants}>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, mb: 3, p: 1, pr: 2, borderRadius: '999px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
-                  <MonitorHeartIcon sx={{ color: '#818cf8', ml: 1 }} />
-                  <Typography variant="subtitle2" sx={{ color: '#818cf8', fontWeight: 700, letterSpacing: 1.5 }}>
-                    {HERO.eyebrow}
-                  </Typography>
-                </Box>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 
-                <Typography variant="h1" sx={{ mb: 3, fontWeight: 900, background: 'linear-gradient(to right, #ffffff, #9ca3af)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {HERO.headline[0]} <br />
-                  <span style={{ color: '#6366f1', WebkitTextFillColor: 'initial', textShadow: '0 0 30px rgba(99,102,241,0.5)' }}>{HERO.headline[1]}</span> <br />
-                  {HERO.headline[2]}
+                <Typography
+                  variant="h1"
+                  sx={{
+                    color: '#0f172a',
+                    fontWeight: 800,
+                    fontSize: { xs: '2.5rem', sm: '3.5rem', md: '3.8rem' },
+                    lineHeight: 1.15,
+                    letterSpacing: '-0.03em',
+                    mb: 3,
+                  }}
+                >
+                  Cardio.AI – Certified Medical Software Device
                 </Typography>
 
-                <Typography variant="body1" sx={{ color: 'text.secondary', mb: 5, fontSize: '1.2rem', maxWidth: 500, lineHeight: 1.8 }}>
-                  {HERO.body}
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: '#475569',
+                    fontSize: '1.25rem',
+                    lineHeight: 1.7,
+                    mb: 5,
+                    maxWidth: 540,
+                  }}
+                >
+                  Automatic annotation and interpretation of ECG recordings of any lead configuration and duration of up to 35 days
                 </Typography>
 
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 8 }}>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button
-                      component={Link}
-                      to={HERO.primaryTo}
-                      variant="contained"
-                      size="large"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{ py: 1.5, px: 4, fontSize: '1.1rem' }}
-                    >
-                      {HERO.primaryCta}
-                    </Button>
-                  </motion.div>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <Button
+                    component="a"
+                    href="#contact"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      backgroundColor: '#25a27b',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      px: 4,
+                      py: 1.6,
+                      fontSize: '1.05rem',
+                      borderRadius: '9999px',
+                      boxShadow: '0 8px 25px rgba(37, 162, 123, 0.3)',
+                      '&:hover': {
+                        backgroundColor: '#1b7d5e',
+                      },
+                    }}
+                  >
+                    Contact us
+                  </Button>
+
                   <Button
                     component={Link}
-                    to={HERO.secondaryTo}
-                    variant="text"
+                    to="/predict"
+                    variant="outlined"
                     size="large"
-                    sx={{ color: '#9ca3af', '&:hover': { color: '#fff', background: 'rgba(255,255,255,0.05)' } }}
+                    endIcon={<ArrowForwardIcon />}
+                    sx={{
+                      borderColor: '#cbd5e1',
+                      color: '#0f172a',
+                      fontWeight: 700,
+                      px: 3.5,
+                      py: 1.5,
+                      fontSize: '1.05rem',
+                      borderRadius: '9999px',
+                      '&:hover': {
+                        borderColor: '#25a27b',
+                        backgroundColor: '#e6f7f0',
+                      },
+                    }}
                   >
-                    {HERO.secondaryCta}
+                    Try Cardio Predict
                   </Button>
                 </Box>
 
-                <Grid container spacing={4}>
-                  {STATS.map((stat, i) => (
-                    <Grid item key={i}>
-                      <Typography variant="h4" sx={{ fontWeight: 800, color: '#fff' }}>{stat.value}</Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>{stat.label}</Typography>
-                    </Grid>
-                  ))}
-                </Grid>
               </motion.div>
             </Grid>
 
-            {/* Right Visual Dashboard instead of 3D Model */}
-            <Grid item xs={12} md={5}>
-              <motion.div variants={itemVariants} whileHover={{ y: -10 }} transition={{ type: 'spring', stiffness: 300 }}>
-                <Card sx={{ 
-                  background: 'rgba(17, 24, 39, 0.6)', 
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.2)',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  position: 'relative'
-                }}>
-                  <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box sx={{ w: 10, h: 10, borderRadius: '50%', bgcolor: '#ef4444', width: 12, height: 12 }} />
-                    <Box sx={{ w: 10, h: 10, borderRadius: '50%', bgcolor: '#eab308', width: 12, height: 12 }} />
-                    <Box sx={{ w: 10, h: 10, borderRadius: '50%', bgcolor: '#22c55e', width: 12, height: 12 }} />
-                    <Typography variant="caption" sx={{ ml: 2, color: 'text.secondary', fontWeight: 600 }}>System Status: Active Evaluation</Typography>
-                  </Box>
-                  <CardContent sx={{ p: 4 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-                      <Box>
-                        <Typography variant="overline" sx={{ color: '#14b8a6' }}>Risk Probability</Typography>
-                        <Typography variant="h3" sx={{ color: '#fff', fontWeight: 800 }}>87.4%</Typography>
-                      </Box>
-                      <TimelineIcon sx={{ fontSize: 60, color: '#6366f1', opacity: 0.8 }} />
-                    </Box>
-                    <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.05)' }} />
-                    <Grid container spacing={2}>
-                      {[
-                        { label: 'Patient Age', val: '54 yrs', icon: <DatasetIcon /> },
-                        { label: 'Systolic BP', val: '142 mmHg', icon: <DatasetIcon /> },
-                        { label: 'Cholesterol', val: '235 mg/dL', icon: <DatasetIcon /> }
-                      ].map((item, i) => (
-                        <Grid item xs={12} key={i}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1.5, borderRadius: 2, background: 'rgba(255,255,255,0.03)' }}>
-                            <Typography variant="body2" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                              {item.icon} {item.label}
-                            </Typography>
-                            <Typography variant="body1" sx={{ color: '#fff', fontWeight: 600 }}>{item.val}</Typography>
-                          </Box>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </CardContent>
-                </Card>
+            {/* Hero Right Visual: Laptop displaying ECG software */}
+            <Grid item xs={12} md={6}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }}>
+                <Box sx={{ position: 'relative', textAlign: 'center' }}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 6,
+                      background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
+                      boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.15)',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                    }}
+                  >
+                    <img
+                      src="/images/cardio_laptop_ecg.jpg"
+                      alt="Cardio.AI ECG Software Laptop Interface"
+                      style={{
+                        width: '100%',
+                        borderRadius: 20,
+                        display: 'block',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Paper>
+                </Box>
               </motion.div>
             </Grid>
 
           </Grid>
-
-          <Box sx={{ mt: { xs: 10, md: 16 } }}>
-            <Grid container spacing={4}>
-              {FEATURES.map((feat, idx) => (
-                <Grid item xs={12} md={4} key={idx}>
-                  <motion.div variants={itemVariants} whileHover={{ y: -5, scale: 1.02 }}>
-                    <Card sx={{ height: '100%', p: 3, background: 'linear-gradient(180deg, rgba(31, 41, 55, 0.4) 0%, rgba(17, 24, 39, 0.4) 100%)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                      <Box sx={{ mb: 2, p: 2, display: 'inline-block', borderRadius: 3, background: 'rgba(255,255,255,0.05)' }}>
-                        {feat.icon}
-                      </Box>
-                      <Typography variant="h5" sx={{ color: '#fff', mb: 2, fontWeight: 700 }}>
-                        {feat.title}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
-                        {feat.body}
-                      </Typography>
-                    </Card>
-                  </motion.div>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-          
-        </motion.div>
+        </Container>
       </Box>
+
+      {/* SECTION 2: 3 PLATFORM CARDS (From Screenshot 2) */}
+      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
+        <Grid container spacing={4}>
+          
+          {/* Card 1: Cardio.AI Platform (Mint background) */}
+          <Grid item xs={12} md={4}>
+            <motion.div whileHover={{ y: -8 }} transition={{ type: 'spring', stiffness: 250 }}>
+              <Card
+                elevation={0}
+                sx={{
+                  height: '100%',
+                  backgroundColor: '#e6f7f0',
+                  borderRadius: 6,
+                  p: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  border: 'none',
+                }}
+              >
+                <CardContent sx={{ p: 1 }}>
+                  <Box sx={{ height: 160, overflow: 'hidden', borderRadius: 4, mb: 3 }}>
+                    <img src="/images/predict_ecg_telemetry.jpg" alt="Cardio Platform" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 800, color: '#0f172a', mb: 2 }}>
+                    Cardio.AI Platform
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.7, mb: 4 }}>
+                    State-of-the-art ECG analytics technology. Extended ECG analysis as a service for your precise diagnostic assessment – fast, reliable, simple!
+                  </Typography>
+                </CardContent>
+                <Box sx={{ p: 1 }}>
+                  <Button
+                    component={Link}
+                    to="/predict"
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#25a27b',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      px: 3.5,
+                      py: 1.2,
+                      borderRadius: '9999px',
+                      boxShadow: 'none',
+                      '&:hover': { backgroundColor: '#1b7d5e' },
+                    }}
+                  >
+                    Read more
+                  </Button>
+                </Box>
+              </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Card 2: Cardiac Service (Cream background) */}
+          <Grid item xs={12} md={4}>
+            <motion.div whileHover={{ y: -8 }} transition={{ type: 'spring', stiffness: 250 }}>
+              <Card
+                elevation={0}
+                sx={{
+                  height: '100%',
+                  backgroundColor: '#fdfbf7',
+                  borderRadius: 6,
+                  p: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  border: 'none',
+                }}
+              >
+                <CardContent sx={{ p: 1 }}>
+                  <Box sx={{ height: 160, overflow: 'hidden', borderRadius: 4, mb: 3 }}>
+                    <img src="/images/predict_clinical_report.jpg" alt="Cardiac Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 800, color: '#0f172a', mb: 2 }}>
+                    Cardiac Service
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.7, mb: 4 }}>
+                    Complete remote monitoring solution, we thought of everything end to end so that you can focus on your patients — and on building a world-class cardiovascular program
+                  </Typography>
+                </CardContent>
+                <Box sx={{ p: 1 }}>
+                  <Button
+                    component={Link}
+                    to="/health"
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#25a27b',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      px: 3.5,
+                      py: 1.2,
+                      borderRadius: '9999px',
+                      boxShadow: 'none',
+                      '&:hover': { backgroundColor: '#1b7d5e' },
+                    }}
+                  >
+                    Read more
+                  </Button>
+                </Box>
+              </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Card 3: Cases (White background with border) */}
+          <Grid item xs={12} md={4}>
+            <motion.div whileHover={{ y: -8 }} transition={{ type: 'spring', stiffness: 250 }}>
+              <Card
+                elevation={0}
+                sx={{
+                  height: '100%',
+                  backgroundColor: '#ffffff',
+                  borderRadius: 6,
+                  p: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                }}
+              >
+                <CardContent sx={{ p: 1 }}>
+                  <Box sx={{ height: 160, overflow: 'hidden', borderRadius: 4, mb: 3 }}>
+                    <img src="/images/predict_ai_neural.jpg" alt="Cases" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 800, color: '#0f172a', mb: 2 }}>
+                    Cases & Evidence
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.7, mb: 4 }}>
+                    Explore the comprehensive details of our successful initiation of multiple pilot projects in the realm of remote online monitoring.
+                  </Typography>
+                </CardContent>
+                <Box sx={{ p: 1 }}>
+                  <Button
+                    component={Link}
+                    to="/health#faq"
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#e6f7f0',
+                      color: '#25a27b',
+                      fontWeight: 700,
+                      px: 3.5,
+                      py: 1.2,
+                      borderRadius: '9999px',
+                      boxShadow: 'none',
+                      '&:hover': { backgroundColor: '#d1f2e4' },
+                    }}
+                  >
+                    Read more
+                  </Button>
+                </Box>
+              </Card>
+            </motion.div>
+          </Grid>
+
+        </Grid>
+      </Container>
+
+      {/* SECTION 3: DARK 3D HEART ECG ANALYTICS BANNER (From Screenshot 3) */}
+      <Box sx={{ background: 'linear-gradient(135deg, #0b1520 0%, #112233 100%)', color: '#ffffff', py: { xs: 8, md: 12 }, px: 2 }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'inline-block', border: '1px solid rgba(255,255,255,0.2)', px: 2, py: 0.5, borderRadius: 9999, mb: 3 }}>
+                <Typography variant="caption" sx={{ color: '#cbd5e1', fontWeight: 600 }}>Web platform</Typography>
+              </Box>
+              <Typography variant="h2" sx={{ color: '#ffffff', fontWeight: 800, mb: 3, fontSize: { xs: '2rem', md: '3rem' } }}>
+                State-of-the-art ECG analytics technology
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#94a3b8', fontSize: '1.2rem', lineHeight: 1.8, mb: 5, maxWidth: 500 }}>
+                Extended ECG analysis as a service for your precise diagnostic assessment – fast, reliable, simple!
+              </Typography>
+              <Button
+                component={Link}
+                to="/predict"
+                variant="contained"
+                size="large"
+                sx={{
+                  backgroundColor: '#25a27b',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 9999,
+                  '&:hover': { backgroundColor: '#1b7d5e' },
+                }}
+              >
+                Try it for free
+              </Button>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Box sx={{ position: 'relative', textAlign: 'center' }}>
+                <img
+                  src="/images/predict_ai_neural.jpg"
+                  alt="3D Holographic Heart Scanning"
+                  style={{ width: '100%', borderRadius: 24, boxShadow: '0 20px 50px rgba(0,0,0,0.5)', objectFit: 'cover' }}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* SECTION 4: BENEFITS FOR CLINICS (From Screenshot 4) */}
+      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 14 } }}>
+        <Grid container spacing={8} alignItems="center">
+          
+          {/* Left: Doctors Team Photo with Floating Green Badge */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ position: 'relative' }}>
+              <img
+                src="/images/clinic_doctors_team.jpg"
+                alt="Clinic Doctors Team"
+                style={{ width: '100%', borderRadius: 28, display: 'block', boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}
+              />
+
+              <Paper
+                elevation={0}
+                sx={{
+                  position: 'absolute',
+                  bottom: -30,
+                  left: 20,
+                  right: 20,
+                  backgroundColor: '#25a27b',
+                  color: '#ffffff',
+                  p: 3,
+                  borderRadius: 5,
+                  boxShadow: '0 15px 30px rgba(37, 162, 123, 0.3)',
+                }}
+              >
+                <Typography variant="body1" sx={{ fontWeight: 700, lineHeight: 1.5 }}>
+                  Comprehensive Long-term ECG Monitoring: Convenient, Maintenance-Free, and Fast Reporting with 24/7 Access
+                </Typography>
+              </Paper>
+            </Box>
+          </Grid>
+
+          {/* Right: Bullet List & Controls */}
+          <Grid item xs={12} md={6} sx={{ pt: { xs: 6, md: 0 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton
+                  size="small"
+                  onClick={() => setSlideIndex((prev) => (prev === 0 ? 1 : 0))}
+                  sx={{ border: '1px solid #cbd5e1', borderRadius: '50%' }}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => setSlideIndex((prev) => (prev === 0 ? 1 : 0))}
+                  sx={{ border: '1px solid #cbd5e1', borderRadius: '50%' }}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </Box>
+              <Typography variant="subtitle2" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                01/02
+              </Typography>
+            </Box>
+
+            <Typography variant="h2" sx={{ color: '#0f172a', fontWeight: 800, mb: 4 }}>
+              Benefits For Clinics
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 5 }}>
+              {clinicBenefits.map((benefit, idx) => (
+                <Box key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                  <CheckCircleIcon sx={{ color: '#25a27b', fontSize: 20, mt: 0.3, flexShrink: 0 }} />
+                  <Typography variant="body1" sx={{ color: '#334155', fontWeight: 500, lineHeight: 1.6 }}>
+                    {benefit}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Button
+              component="a"
+              href="#contact"
+              variant="contained"
+              size="large"
+              sx={{
+                backgroundColor: '#25a27b',
+                color: '#ffffff',
+                fontWeight: 700,
+                px: 4,
+                py: 1.5,
+                borderRadius: 9999,
+                '&:hover': { backgroundColor: '#1b7d5e' },
+              }}
+            >
+              Contact Us
+            </Button>
+          </Grid>
+
+        </Grid>
+      </Container>
+
+      {/* SECTION 5: CARDIAC ANALYSIS SERVICES INCLUDE (From Screenshot 5) */}
+      <Box sx={{ backgroundColor: '#fafafa', py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{ color: '#0f172a', fontWeight: 800, mb: 6, textAlign: 'center' }}>
+            Cardiac Analysis Services include:
+          </Typography>
+
+          <Grid container spacing={4}>
+            
+            {/* Service 1 */}
+            <Grid item xs={12} md={4}>
+              <Card elevation={0} sx={{ height: '100%', borderRadius: 6, border: '1px solid rgba(0,0,0,0.06)', p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <CardContent sx={{ p: 1 }}>
+                  <Box sx={{ height: 180, overflow: 'hidden', borderRadius: 4, mb: 3 }}>
+                    <img src="/images/cardio_laptop_ecg.jpg" alt="Setup Healthcare Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f172a', mb: 2 }}>
+                    Set up the New Healthcare Service
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.7 }}>
+                    Full support in launching the end-to-end remote cardiac analysis service in the clinic, from staff training, access to all training materials and consumables (ECG biosensors), and further technical support and consulting.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Service 2 */}
+            <Grid item xs={12} md={4}>
+              <Card elevation={0} sx={{ height: '100%', borderRadius: 6, border: '1px solid rgba(0,0,0,0.06)', p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <CardContent sx={{ p: 1 }}>
+                  <Box sx={{ height: 180, overflow: 'hidden', borderRadius: 4, mb: 3 }}>
+                    <img src="/images/cardiac_biosensor.jpg" alt="Single Use ECG Biosensor" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f172a', mb: 2 }}>
+                    Single Use ECG Biosensor
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.7 }}>
+                    We provide the LifeSignals 2-Channel ECG Wearable Biosensor, a clinical-grade device that is certificated and designed for the collection of data up to 7 days. Supports identification of arrhythmias enabling high-quality data.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Service 3 */}
+            <Grid item xs={12} md={4}>
+              <Card elevation={0} sx={{ height: '100%', borderRadius: 6, border: '1px solid rgba(0,0,0,0.06)', p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <CardContent sx={{ p: 1 }}>
+                  <Box sx={{ height: 180, overflow: 'hidden', borderRadius: 4, mb: 3 }}>
+                    <img src="/images/predict_clinical_report.jpg" alt="High Quality Analysis Report" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f172a', mb: 2 }}>
+                    High-Quality Analysis Report
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.7, mb: 3 }}>
+                    Full decoding of the ECG recording, verification by cardiac technicians, and provision of a comprehensive assessment report to the doctor, including full access to raw ECG signal.
+                  </Typography>
+                </CardContent>
+                <Box sx={{ p: 1 }}>
+                  <Button
+                    component={Link}
+                    to="/predict"
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#25a27b',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      px: 3.5,
+                      py: 1.2,
+                      borderRadius: '9999px',
+                      '&:hover': { backgroundColor: '#1b7d5e' },
+                    }}
+                  >
+                    Get report
+                  </Button>
+                </Box>
+              </Card>
+            </Grid>
+
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* SECTION 6: CONTACT US SECTION */}
+      <ContactSection />
+
+      {/* FOOTER */}
+      <Footer />
+
     </Box>
   );
 }
