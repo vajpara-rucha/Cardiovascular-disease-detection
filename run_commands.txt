@@ -1,0 +1,30 @@
+=============================================
+COMMANDS TO RUN THE LOAN DEFAULT PREDICTION APP
+=============================================
+
+--- TERMINAL 1: BACKEND ---
+1. Open a new terminal.
+2. Ensure you are in the root directory or navigate to the api directory:
+   cd "e:\ML_Cardiovascular_Disease\api"
+
+3. Install requirements (if you haven't already):
+   pip install -r requirements.txt
+
+4. Start the FastAPI server:
+   uvicorn index:app --reload
+
+   (The backend will run on http://localhost:8000)
+
+
+--- TERMINAL 2: FRONTEND ---
+1. Open a second new terminal.
+2. Navigate to the project root directory (frontend is now in root):
+   cd "e:\ML_Cardiovascular_Disease"
+
+3. Install dependencies (if you haven't already):
+   npm install
+
+4. Start the Vite React server:
+   npm run dev
+
+   (The frontend will run on http://localhost:5173)

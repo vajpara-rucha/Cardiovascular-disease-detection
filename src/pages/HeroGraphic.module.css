@@ -1,0 +1,181 @@
+.heroCardBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05), transparent 70%);
+  pointer-events: none;
+}
+
+.scene {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.orbits {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.orbitRing {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(37, 99, 235, 0.2);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin linear infinite;
+}
+
+.orbitRing1 {
+  width: 150px;
+  height: 150px;
+  animation-duration: 20s;
+}
+
+.orbitRing2 {
+  width: 250px;
+  height: 250px;
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+
+.orbitDot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.orbitDotViolet {
+  background: #8b5cf6;
+}
+
+.orbitDotCyan {
+  background: #0ea5e9;
+}
+
+.cubeWrap {
+  width: 100px;
+  height: 100px;
+  perspective: 800px;
+  z-index: 10;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: cubeRotate 15s infinite linear;
+}
+
+.cubeFace {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(37, 99, 235, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cubeFront  { transform: rotateY(0deg) translateZ(50px); }
+.cubeBack   { transform: rotateY(180deg) translateZ(50px); }
+.cubeRight  { transform: rotateY(90deg) translateZ(50px); }
+.cubeLeft   { transform: rotateY(-90deg) translateZ(50px); }
+.cubeTop    { transform: rotateX(90deg) translateZ(50px); }
+.cubeBottom { transform: rotateX(-90deg) translateZ(50px); }
+
+.cubeCore {
+  width: 40px;
+  height: 40px;
+  background: #2563eb;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+  animation: pulse 2s infinite ease-in-out alternate;
+}
+
+.pill {
+  position: absolute;
+  background: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 20;
+}
+
+.pillTop {
+  top: 10%;
+  right: 15%;
+  animation: float 3s ease-in-out infinite alternate;
+}
+
+.pillLeft {
+  bottom: 20%;
+  left: 10%;
+  animation: float 4s ease-in-out infinite alternate-reverse;
+}
+
+.pillRight {
+  top: 50%;
+  right: 5%;
+  animation: float 3.5s ease-in-out infinite alternate;
+}
+
+.pillDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.pillTone_violet {
+  background: #8b5cf6;
+}
+
+.pillTone_cyan {
+  background: #0ea5e9;
+}
+
+.pillTone_mint {
+  background: #10b981;
+}
+
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes cubeRotate {
+  from { transform: rotateX(0deg) rotateY(0deg); }
+  to { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+@keyframes pulse {
+  from { transform: scale(0.9); opacity: 0.8; }
+  to { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes float {
+  from { transform: translateY(-10px); }
+  to { transform: translateY(10px); }
+}
